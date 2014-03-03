@@ -1,0 +1,77 @@
+%img.banner{src: 'images/wind-thin.jpg'}
+.container.text-center
+  %h1 Renewable Energy Arcade
+  %h2 A game to save the planet
+  .row.separate
+    .col-md-3.col-md-offset-3
+      %a{href:'#learn'}
+        %button.btn.btn-lg.btn-default Learn the Rules
+    .col-md-3
+      %a{href:'#play'}
+        %button.btn.btn-lg.btn-default Play the Game
+.blue#learn
+  .container
+    .row.pad
+      .col-md-6
+        %h1 You're an Engineer
+        %h2 A wind engineer.
+        %p.larger And it's time to build a wind farm. The land is ready, and all that's needed is a good placement for 20 wind turbines.
+      .col-md-6.pad.text-center
+        %img.center{src: 'images/jumper.png'}
+
+.container
+  .row.pad
+    .col-md-6.pad.text-center
+      %img.center{src: 'images/talking-worker.png'}
+
+    .col-md-6
+      %h1 And Place Turbines
+      %h2 is just what you're going to do.
+      %p.larger 
+
+.orange
+  .container
+    .row.pad
+      .col-md-12.pad.text-center
+        %h1 Challenges
+        %h2 Over time, you've learned lessons.
+    .row.pad
+      .col-md-6.pad
+        %p.larger 
+          %b First
+          , turbines remove energy from the flow, and this creates a wake. This  will decrease the amount of energy seen by turbines downstream of the first turbine.
+        %p.larger
+          %b Second
+          , these wakes also create spinning regions of fluid, or eddies. When these eddies hit another turbine, damage can occur, decreasing the lifetime of the turbine and it's reliability.
+      .col-md-6.text-center
+        %img.center{src: 'images/wakes.png'}
+
+.container.pad
+  .row.pad
+    .col-md-12.text-center
+      %h2 And so you talk to your turbines.
+  .row
+    .col-md-6.text-center
+      %img.center{src: 'images/placements.png'}
+    .col-md-6
+      %p.larger "Alright guys, it's game time. I'm going to place each of you in the best possible location, with the goal of producing the most energy. If you spray each other with your wakes, your energy production will decrease. And turbulent eddies are going to reduce your reliability, and further decrease production.
+      %p.larger "Now, let's get out there and kick some wind butt!"
+
+.tan#play
+  .container.text-center{style: 'padding-top:8em; padding-bottom:8em;'}
+    %h1 Time to Play
+    %form{action: '/game/new', method: 'post'}
+      .form-group.pad
+        %label.sr-only{for: 'name'} First Name
+        .col-md-6.col-md-offset-3
+          %input.input-lg.form-control{type: 'text', id: 'name', name: 'name', placeholder: 'First Name'}
+      .form-group.pad
+        %label.sr-only{for: 'email'} Email
+        .col-md-6.col-md-offset-3
+          %input.input-lg.form-control{type: 'email', id: 'email', name: 'email', placeholder: 'Email Address'}
+          %span.help-block *We'll never share your email address.
+      .form-group.pad
+        .col-md-6.col-md-offset-3
+          %button.btn-lg.btn.btn-success{type: 'submit'} Start the Game
+
+.dark{style: 'height:300px;'}
