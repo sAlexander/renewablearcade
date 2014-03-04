@@ -9,5 +9,5 @@ configure :test do
   set :database, 'sqlite::memory'
 end
 
-require_relative 'game'
 require_relative 'migrate'
+require_relative 'game'
