@@ -14,9 +14,9 @@ class MyApp < Sinatra::Application
 
   post "/game/new" do
     puts params
-    @name = params[:name]
+    @firstname = params[:firstname]
     @email = params[:email]
-    u = Game.new(:name => @name, :email => @email)
+    u = Game.new(:firstname => @firstname, :email => @email)
     if u.valid?
       u.save
       redirect to("/game/#{u.token}/level1")
@@ -27,7 +27,7 @@ class MyApp < Sinatra::Application
 
   get "/game/:token" do
     g = Game.find(:token => params[:token])
-    return g.name
+    return g.firstname
   end
 
   get "/game/:token/level1" do
@@ -43,6 +43,8 @@ class MyApp < Sinatra::Application
     g.adisk = locations
     g.run
 
+    redirect to("/game/#{g.token}/results")
+
   end
 
   get "/game/:token/status" do
@@ -52,9 +54,14 @@ class MyApp < Sinatra::Application
     return JSON.generate(g.status)
 
   end
-
   get "/game/:token/results" do
+      haml :'game/results'
+  end
 
+  get "/game/:token/power" do
+    g = Game.find(:token => params[:token])
+    data = {:power => g.totalpower }
+    return JSON.generate(data)
   end
 
 
