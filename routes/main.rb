@@ -21,13 +21,24 @@ class MyApp < Sinatra::Application
       u.save
       redirect to("/game/#{u.token}/level1")
     else
-      return 'Failure :('
+      return 'Failure :(. Please make sure to enter name and email address.'
     end
   end
 
   get "/game/:token" do
     g = Game.find(:token => params[:token])
     return g.firstname
+  end
+
+  get "/game/:token/new" do
+    g = Game.find(:token => params[:token])
+    u = Game.new(:firstname => g.firstname, :email => @email)
+    if u.valid?
+      u.save
+      redirect to("/game/#{u.token}/level1")
+    else
+      return 'Failure :(. Please make sure to enter name and email address'
+    end
   end
 
   get "/game/:token/level1" do
@@ -60,9 +71,19 @@ class MyApp < Sinatra::Application
 
   get "/game/:token/power" do
     g = Game.find(:token => params[:token])
-    data = {:power => g.totalpower }
+    g.power = g.totalpower
+    g.save
+    cur = {:name => g.firstname, :power => g.power}
+    other = Game.exclude(:token => g.token).exclude(:power => nil).all
+    other = other.map {|a| {:name => a.firstname, :power => a.power}}
+    leaders = Game.exclude(:power => nil).order(Sequel.desc(:power)).limit(3).all
+    leaders = leaders.map {|a| {:name => a.firstname, :power => a.power}}
+    data = {:current => cur, :other => other, :leaders => leaders}
     return JSON.generate(data)
   end
+
+
+
 
 
 
