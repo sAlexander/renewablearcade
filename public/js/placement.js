@@ -10,6 +10,7 @@ var d = [
 window.onload=function(){
 var chart = d3.select("#placeholder").append("svg")
     .attr("class","chart")
+    .attr("id","layout")
     .attr("width",w)
     .attr("height",h)
     .on("mousedown",add);
