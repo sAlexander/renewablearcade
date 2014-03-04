@@ -36,11 +36,16 @@ class Game < Sequel::Model
     @bindir
   end
 
+  def pubdir()
+    @pubdir ||= File.absolute_path("public/game/#{self.token}")
+  end
+
   def run()
     # Fork off the processes
     fork do
       rundir = self.rundir
       bindir = self.bindir
+      pubdir = self.pubdir
 
       Dir.chdir self.rundir
 
@@ -59,6 +64,16 @@ class Game < Sequel::Model
       cmd = "cp #{rundir}/data/parameters.json #{rundir}/parameters.json"
       value = `#{cmd}`
 
+      ## run the python
+      cmd = "python #{bindir}/plotdata.py latest"
+      value = `#{cmd}`
+
+      cmd = "mkdir -p #{pubdir}"
+      value = `#{cmd}`
+
+      cmd = "cp #{rundir}/data/plots/latest.png #{pubdir}/latest.png"
+      value = `#{cmd}`
+      
       ## run the python
       cmd = "python #{bindir}/plotdata.py"
       value = `#{cmd}`
@@ -105,14 +120,18 @@ class Game < Sequel::Model
     maxcode = 0
     if File.exist?("#{self.rundir}/data")
       Dir["#{self.rundir}/data/*.raw"].select do |f|
-        num = /data\/([\d]*).raw/.match(f)[1].to_i
-        maxcode = num if num > maxcode
+        if f=~/data\/([\d]*).raw/
+          num = /data\/([\d]*).raw/.match(f)[1].to_i
+          maxcode = num if num > maxcode
+        end
       end
 
       maxplot = 0
       Dir["#{self.rundir}/data/plots/*.png"].select do |f|
-        num = /plots\/([\d]*).png/.match(f)[1].to_i
-        maxplot = num if num > maxplot
+        if f=~/plots\/([\d]*).png/
+          num = /plots\/([\d]*).png/.match(f)[1].to_i
+          maxplot = num if num > maxplot
+        end
       end
 
       codeprogress = maxcode*1.0 / self.parameters["nts"]
