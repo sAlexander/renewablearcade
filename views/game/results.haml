@@ -1,0 +1,90 @@
+.blue
+  .container.separate.text-center
+    %h1 Level 1
+
+.container.text-center
+  .row
+    .col-lg-12
+      %h1 Running Simulation
+  .row
+    .col-lg-12#results{style: 'display: none;'} 
+      %h2.separate
+        You produced
+        %span 00
+        kW of energy!
+      %p.text-left.larger
+        In the very near future, you'll also be able to:
+      %ul.text-left.larger
+        %li View a video of your simulation. The video is already made, I just need to stream it from the server to you.
+        %li View your results compared to your peers
+        %li See how your design impacted loads and reliability of the turbines
+        %li Move onto the next level
+        %li Know how much time it took to produce your energy. ie xxx kW in an hour? day? year?
+  .row
+    .col-lg-12
+      #placeholder.text-center
+
+%script{src: 'http://d3js.org/d3.v3.min.js'}
+
+:javascript
+    var width = 960,
+        height = 500,
+        twoPi = 2 * Math.PI,
+        progress = 0,
+        formatPercent = d3.format(".0%");
+    var arc = d3.svg.arc()
+        .startAngle(0)
+        .innerRadius(180)
+        .outerRadius(240);
+
+    var svg = d3.select("#placeholder").append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class","center")
+    .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    var meter = svg.append("g")
+        .attr("class", "progress-meter");
+
+    meter.append("path")
+        .attr("class", "background")
+        .attr("d", arc.endAngle(twoPi));
+
+    var foreground = meter.append("path")
+        .attr("class", "foreground");
+
+    var text = meter.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", ".35em");
+
+    update = function(){
+        d3.json('status',function(error,data) {
+            if (error) return console.warn(error);
+            var i = d3.interpolate(progress, data.code);
+            d3.transition().tween("progress", function() {
+                return function(t) {
+                    progress = i(t);
+                    foreground.attr("d", arc.endAngle(twoPi * progress));
+                    text.text(formatPercent(progress));
+                };
+            });
+            if(progress < .999) {
+                setTimeout(update,2000);
+            } else {
+                meter.transition().attr("transform", "scale(0)");
+                setTimeout(power,250);
+            };
+        });
+    };
+
+    power = function(){
+        d3.json('power',function(error,data) {
+            if (error) return console.warn(error);
+            d3.select("#results span").text(data.power.toFixed(0));
+            d3.select("#results").style("display","inline");
+            svg.style('display','none');
+        });
+    }
+    setTimeout(update,1000);
+        
