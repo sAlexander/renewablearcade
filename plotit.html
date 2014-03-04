@@ -6,15 +6,37 @@
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
+.bubble circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.bubble circle.current {
+  fill: red;
+  stroke: red;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  padding: 1em;
+  background-color: black;
+  opacity: 0.8;
+  color: white;
+  border-radius: 5px;
+}
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-d = [{name: "Spencer", power: 47474.55569715719}, {name: "Spencer", power: 55714.08553745196}, {name: "Spencer", power: 52829.63689746416}, {name: "Spencer", power: 58271.36742596007}, {name: "hsgs", power: 42038.42347594729}, {name: "Peter", power: 44808.42531328471}]
+d = [{name: "Spencer", power: 47474.55569715719, current: 1}, {name: "Spencer", power: 55714.08553745196}, {name: "Spencer", power: 52829.63689746416}, {name: "Spencer", power: 58271.36742596007}, {name: "hsgs", power: 42038.42347594729}, {name: "Peter", power: 44808.42531328471}]
 
 var margin = {left:30,bottom:30,top:10,right:10},
-    w = 700-margin.left-margin.right,
-    h = 400-margin.top-margin.bottom
+    w = 500-margin.left-margin.right,
+    h = 200-margin.top-margin.bottom
 
 var x = d3.scale.linear()
     .domain(d3.extent(d,function(d){return d.power;}))
@@ -26,7 +48,9 @@ var hist = d3.layout.histogram()
     (d);
 
 var maxy = d3.max(hist.map(function(h){return h.y})),
-    ny = d3.max([maxy+1, 10]);
+    ny = d3.max([maxy+1, 10]),
+    dy = h/ny,
+    r  = d3.min([dy/2-2,10]);
 
 var y = d3.scale.linear()
     .domain([0,ny])
@@ -39,19 +63,27 @@ var xAxis = d3.svg.axis()
 var svg = d3.select("body").append("svg")
     .attr("width", w + margin.left + margin.right)
     .attr("height", h + margin.top + margin.bottom)
+    .attr("class","bubble")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-/*
-http://bost.ocks.org/mike/nest/ 
-http://bl.ocks.org/mbostock/3048450
-   
-   var circle = svg.selectAll("circle")
-             .data(hist)
-            .enter().append("circle")
-             .attr("cy" */
 
-    
+
+var tooltip = d3.select("body")
+    .append("div").attr("class","tooltip")
+var circle = svg.selectAll(".circle")
+    .data(hist)
+  .enter().append("g").attr("class","circle")
+    .selectAll('circle')
+    .data(function(d) { console.log(d); return d.map(function(it) {it.x = d.x; return it;});})
+  .enter().append("circle")
+    .attr("cx",function(d,i){return x(d.x)})
+    .attr("cy",function(d,i){return y(i+0.5)})
+    .attr("r",r)
+    .attr("class",function(d){if (d.current) return 'current'})
+    .on("mouseover", function(d,i){tooltip.text(d.name+": "+d.power.toFixed(0)); return tooltip.style("visibility", "visible");})
+    .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+    .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
 svg.append("g")
     .attr("class", "x axis")
