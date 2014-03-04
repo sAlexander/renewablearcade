@@ -6,7 +6,7 @@ class Game < Sequel::Model
     super
     email_regexp = /(\A(\s*)\Z)|(\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z)/i
     validates_format email_regexp, :email
-    validates_presence :name
+    validates_presence :firstname
   end
 
   def before_create
@@ -59,7 +59,6 @@ class Game < Sequel::Model
       cmd = "cp #{rundir}/data/parameters.json #{rundir}/parameters.json"
       value = `#{cmd}`
 
-
       ## run the python
       cmd = "python #{bindir}/plotdata.py"
       value = `#{cmd}`
@@ -73,7 +72,6 @@ class Game < Sequel::Model
 
       ## remove the directory
       FileUtils.rm_rf("#{rundir}/data")
-
 
     end
     return true
@@ -132,15 +130,21 @@ class Game < Sequel::Model
   end
 
   def totalpower()
-    powerfile = "#{self.rundir}/power.txt"
-    tp = 0
-    if File.file?(powerfile)
-      File.foreach(powerfile).with_index do |line,line_num|
-        num = line.nil? ? 0 : line.to_f
-        tp = tp + num
+    if self.power.nil?
+      powerfile = "#{self.rundir}/power.txt"
+      tp = 0
+      if File.file?(powerfile)
+        File.foreach(powerfile).with_index do |line,line_num|
+          num = line.nil? ? 0 : line.to_f
+          tp = tp + num
+        end
       end
+      tp = tp*self.parameters["dt"]*10
+      self.power = tp
+      res = self.save()
+      raise 'hell' if res == false
     end
-    tp = tp*self.parameters["dt"]*10
+    self.power
   end
 
 
