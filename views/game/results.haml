@@ -2,16 +2,29 @@
   .container.separate.text-center
     %h1 Level 1
 
-.container.text-center
-  .row
+.container
+  #results{style: 'display: none;'} 
+    .row
+      .col-lg-12.text-center
+        %h2
+          You produced
+          %span 00
+          kW of energy!
+    .row
+      .col-lg-12.text-center
+        %a{href: 'new'}
+          %button.btn.btn-warning.btn-lg Play Again
+
+    .row
+      .col-lg-6
+        #placeholder-plot
+      .col-lg-6
+        %h2 Leaderboard
+        #placeholder-results.larger
+    .row
+      .col-lg-12.text-center
+        #placeholder-img
     .col-lg-12
-      %h1 Running Simulation
-  .row
-    .col-lg-12#results{style: 'display: none;'} 
-      %h2.separate
-        You produced
-        %span 00
-        kW of energy!
       %p.text-left.larger
         In the very near future, you'll also be able to:
       %ul.text-left.larger
@@ -20,9 +33,12 @@
         %li See how your design impacted loads and reliability of the turbines
         %li Move onto the next level
         %li Know how much time it took to produce your energy. ie xxx kW in an hour? day? year?
-  .row
+  .row#progress
+    .col-lg-12.text-center
+      %h1 Running Simulation
     .col-lg-12
       #placeholder.text-center
+
 
 %script{src: 'http://d3js.org/d3.v3.min.js'}
 
@@ -81,10 +97,91 @@
     power = function(){
         d3.json('power',function(error,data) {
             if (error) return console.warn(error);
-            d3.select("#results span").text(data.power.toFixed(0));
+            d3.select("#results span").text(data.current.power.toFixed(0));
             d3.select("#results").style("display","inline");
-            svg.style('display','none');
+            d3.select("#progress").style('display','none');
+            makeplot(data);
+            showim();
+            makeleaderboard(data);
         });
     }
+
+    makeleaderboard = function(data) {
+        d = data.leaders;
+        d3.select("#placeholder-results").selectAll('div')
+            .data(d)
+          .enter().append('div').text(function(d){return d.name + ': ' + d.power.toFixed(0);});
+    };
+
+    showim = function(){
+      var img = new Image();
+      var div = document.getElementById('placeholder-img');
+      img.src = 'latest.png';
+      div.appendChild(img);
+    };
+    makeplot = function(data){
+        d = data.other;
+        c = data.current;
+        c.current = 1;
+        d.push(c)
+
+        var margin = {left:30,bottom:30,top:10,right:10},
+            w = 500-margin.left-margin.right,
+            h = 200-margin.top-margin.bottom
+
+        var x = d3.scale.linear()
+            .domain(d3.extent(d,function(d){return d.power;}))
+            .range([0, w]);
+
+        var hist = d3.layout.histogram()
+            .bins(x.ticks(7))
+            .value(function(d) { return d.power;})
+            (d);
+
+        var maxy = d3.max(hist.map(function(h){return h.y})),
+            ny = d3.max([maxy+1, 10]),
+            dy = h/ny,
+            r  = d3.min([dy/2-2,10]);
+
+        var y = d3.scale.linear()
+            .domain([0,ny])
+            .range([h,0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var svg = d3.select("#placeholder-plot").append("svg")
+            .attr("width", w + margin.left + margin.right)
+            .attr("height", h + margin.top + margin.bottom)
+            .attr("class","bubble")
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+        var circle = svg.selectAll(".circle")
+            .data(hist)
+          .enter().append("g").attr("class","circle")
+            .selectAll('circle')
+            .data(function(d) { console.log(d); return d.map(function(it) {it.x = d.x; return it;});})
+          .enter().append("circle")
+            .attr("cx",function(d,i){return x(d.x)})
+            .attr("cy",function(d,i){return y(i+0.5)})
+            .attr("r",r)
+            .attr("class",function(d){if (d.current) return 'current'})
+            .on("mouseover", function(d,i){console.log('hovered'); tooltip.text(d.name+": "+d.power.toFixed(0)); return tooltip.style("visibility", "visible");})
+            .on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+            .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h + ")")
+            .call(xAxis);
+    };
+    var tooltip = d3.select("body")
+        .append("div").attr("class","ttip")
+
+                
     setTimeout(update,1000);
         

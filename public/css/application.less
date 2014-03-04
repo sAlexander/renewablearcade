@@ -60,7 +60,7 @@ h2 {
     padding-bottom:3em;
 }
 
-p.larger {
+.larger {
     font-size: 2em;
 }
 
@@ -94,4 +94,32 @@ svg#layout {
     height: 90px;
     font-size: 2em;
     text-align: center;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.bubble circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.bubble circle.current {
+  fill: red;
+  stroke: red;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 10;
+  visibility: hidden;
+  padding: 1em;
+  background-color: black;
+  opacity: 0.8;
+  color: white;
+  border-radius: 5px;
 }
