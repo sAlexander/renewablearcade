@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+d = [{name: "Spencer", power: 47474.55569715719}, {name: "Spencer", power: 55714.08553745196}, {name: "Spencer", power: 52829.63689746416}, {name: "Spencer", power: 58271.36742596007}, {name: "hsgs", power: 42038.42347594729}, {name: "Peter", power: 44808.42531328471}]
+
+var margin = {left:30,bottom:30,top:10,right:10},
+    w = 700-margin.left-margin.right,
+    h = 400-margin.top-margin.bottom
+
+var x = d3.scale.linear()
+    .domain(d3.extent(d,function(d){return d.power;}))
+    .range([0, w]);
+
+var hist = d3.layout.histogram()
+    .bins(x.ticks(10))
+    .value(function(d) { return d.power;})
+    (d);
+
+var maxy = d3.max(hist.map(function(h){return h.y})),
+    ny = d3.max([maxy+1, 10]);
+
+var y = d3.scale.linear()
+    .domain([0,ny])
+    .range([h,0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var svg = d3.select("body").append("svg")
+    .attr("width", w + margin.left + margin.right)
+    .attr("height", h + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+/* var circle = svg.selectAll("circle")
+             .data(hist)
+            .enter().append("circle")
+             .attr("cy" */
+
+    
+
+svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + h + ")")
+    .call(xAxis);
+
+</script>
