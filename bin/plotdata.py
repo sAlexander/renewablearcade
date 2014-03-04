@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from matplotlib import pyplot as plt
 import numpy as np
@@ -30,10 +31,17 @@ if __name__ == '__main__':
 
     filenames=  os.listdir(basedir)
     filenames.sort()
-    avgvel = []
-    for i,filename in enumerate(filenames):
-        print i
-        path = os.path.join(basedir,filename)
-        plotpath = os.path.join(plotdir,'%05d.png' % i)
+
+    if len(sys.argv) < 2:
+        avgvel = []
+        for i,filename in enumerate(filenames):
+            print i
+            path = os.path.join(basedir,filename)
+            plotpath = os.path.join(plotdir,'%05d.png' % i)
+            printit(path,plotpath)
+    else:
+        latest = filenames[-4]
+        path = os.path.join(basedir,latest)
+        plotpath = os.path.join(plotdir,'latest.png')
         printit(path,plotpath)
 
