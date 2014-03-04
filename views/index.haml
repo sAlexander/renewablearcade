@@ -21,12 +21,14 @@
 
 .container
   .row.pad
-    .col-md-6.pad.text-center
-      %img.center{src: 'images/talking-worker.png'}
+    .col-md-6.pad
+      %img{src: 'images/talking-worker.png'}
+      %p.thoughts
+        That's a good spot
 
     .col-md-6
       %h1 And Place Turbines
-      %h2 is just what you're going to do.
+      %h2 is what you're going to do.
       %p.larger 
 
 .orange
@@ -62,9 +64,9 @@
     %h1 Time to Play
     %form{action: '/game/new', method: 'post'}
       .form-group.pad
-        %label.sr-only{for: 'name'} First Name
+        %label.sr-only{for: 'firstname'} First Name
         .col-md-6.col-md-offset-3
-          %input.input-lg.form-control{type: 'text', id: 'name', name: 'name', placeholder: 'First Name'}
+          %input.input-lg.form-control{type: 'text', id: 'firstname', name: 'firstname', placeholder: 'First Name'}
       .form-group.pad
         %label.sr-only{for: 'email'} Email
         .col-md-6.col-md-offset-3
@@ -75,3 +77,4 @@
           %button.btn-lg.btn.btn-success{type: 'submit'} Start the Game
 
 .dark{style: 'height:300px;'}
+
