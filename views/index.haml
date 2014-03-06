@@ -64,13 +64,13 @@
     %h1 Time to Play
     %form{action: '/game/new', method: 'post'}
       .form-group.pad
-        %label.sr-only{for: 'firstname'} First Name
+        %label.sr-only{for: 'firstname'} Full Name
         .col-md-6.col-md-offset-3
-          %input.input-lg.form-control{type: 'text', id: 'firstname', name: 'firstname', placeholder: 'First Name'}
+          %input.input-lg.form-control{type: 'text', id: 'firstname', name: 'firstname', placeholder: 'Full Name'}
       .form-group.pad
         %label.sr-only{for: 'email'} Email
         .col-md-6.col-md-offset-3
-          %input.input-lg.form-control{type: 'email', id: 'email', name: 'email', placeholder: 'Email Address'}
+          %input.input-lg.form-control{type: 'email', id: 'email', name: 'email', placeholder: 'Email Address (optional)'}
           %span.help-block *We'll never share your email address.
       .form-group.pad
         .col-md-6.col-md-offset-3
