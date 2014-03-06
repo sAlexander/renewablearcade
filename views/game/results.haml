@@ -134,7 +134,7 @@
             .range([0, w]);
 
         var hist = d3.layout.histogram()
-            .bins(x.ticks(7))
+            .bins(x.ticks(30))
             .value(function(d) { return d.power;})
             (d);
 
