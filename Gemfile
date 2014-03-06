@@ -6,6 +6,7 @@ gem 'haml', '4.0.4'
 gem 'sequel', '4.4.0'
 gem 'sinatra-sequel'
 gem 'sqlite3'
+gem 'unicorn'
 
 group :development, :test do
   gem 'rspec', '2.14.1'
